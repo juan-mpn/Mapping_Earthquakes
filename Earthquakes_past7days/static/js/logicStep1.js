@@ -1,6 +1,3 @@
-
-
-
 // Add console.log to check to see if our code is working.
 console.log("working.. GeoJSON Polygon"); 
 
@@ -22,15 +19,15 @@ attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap
 
 // Create a base layer that holds both maps.
 let baseMaps = {
-	Street: streets,
-	Dark: satelliteStreets 
+	"Streets": streets,
+	"Satellite": satelliteStreets 
   };
 
   // Create the map object with center, zoom level and default layer.
 let map = L.map('map', {
-	center: [43.7, -79.3],
-zoom: 11,
-	layers: [satelliteStreets]
+	center: [39.5, -98.5],
+zoom: 3,
+	layers: [streets]
 })
 
 // Pass our map layers into our layers control and add the layers control to the map.
@@ -38,7 +35,7 @@ L.control.layers(baseMaps).addTo(map);
 
 
 // Accessing the airport GeoJSON URL
-let torontoHoods = "https://raw.githubusercontent.com/juan-mpn/Mapping_Earthquakes/Mapping_GeoJSON_Polygons/Mapping_GeoJSON_Polygons/static/js/torontoNeighborhoods.json";
+let earthql = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 var myStyle = {
     color: "#ffffa1",
@@ -46,7 +43,7 @@ var myStyle = {
 	
 };
 // Grabbing our GeoJSON data.
-d3.json(torontoHoods).then(function(data) {
+d3.json(earthql).then(function(data) {
     console.log(data);
   // Creating a GeoJSON layer with the retrieved data.
   L.geoJson(data, myStyle).addTo(map);
@@ -55,8 +52,8 @@ d3.json(torontoHoods).then(function(data) {
 	  style: myStyle,
 	  onEachFeature: function(feature, layer) {
 		console.log('Layer', layer);
-		layer.bindPopup("<h2> Airline: "  + feature.properties.airline +' ID: ' + 
-		feature.properties.airline_id + " </h2> <hr> <h3> Destination: " + feature.properties.dst + "</h3>" );
+		layer.bindPopup("<h2> Magnitude: "  + feature.properties.mag +' Location: ' + 
+		feature.properties.place + " </h2> <hr> <h3> Time: " + feature.properties.time + "</h3>" );
 	}
   }).addTo(map)
 
