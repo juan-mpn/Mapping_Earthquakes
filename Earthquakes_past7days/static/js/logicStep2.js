@@ -1,5 +1,5 @@
 // Add console.log to check to see if our code is working.
-console.log("working.. GeoJSON eql7."); 
+console.log("working.. GeoJSON EarthQ L7 step2"); 
 
 // Create the tile layer
 let streets = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -46,15 +46,41 @@ var myStyle = {
 d3.json(earthql).then(function(data) {
     console.log(data);
   // Creating a GeoJSON layer with the retrieved data.
-  L.geoJson(data, myStyle).addTo(map);
-
-  L.geoJson(data, {
-	  style: myStyle,
-	  onEachFeature: function(feature, layer) {
-		console.log('Layer', layer);
-		layer.bindPopup("<h2> Magnitude: "  + feature.properties.mag +' Location: ' + 
-		feature.properties.place + " </h2> <hr> <h3> Time: " + feature.properties.time + "</h3>" );
+//  L.geoJson(data, myStyle).addTo(map);
+// This function returns the style data for each of the earthquakes we plot on
+// the map. We pass the magnitude of the earthquake into a function
+// to calculate the radius.
+	function styleInfo(feature) {
+		return {
+		opacity: 1,
+		fillOpacity: 1,
+		fillColor: "#ffae42",
+		color: "#000000",
+		radius: getRadius(),
+		stroke: true,
+		weight: 0.5
+		};
 	}
+
+	// This function determines the radius of the earthquake marker based on its magnitude.
+	// Earthquakes with a magnitude of 0 will be plotted with a radius of 1.
+	function getRadius(magnitude) {
+		if (magnitude === 0) {
+		return 1;
+		}
+		return magnitude * 4;
+	}
+  L.geoJson(data, {
+	  pointToLayer: function(feature, latlng) {
+		console.log('data2 ..',data);
+		return L.circleMarker(latlng);
+
+//		.bindPopup("<h2> Magnitude: "  + feature.properties.mag +' Location: ' + 
+//		feature.properties.place + " </h2> <hr> <h3> Time: " + feature.properties.time + "</h3>" );
+	},
+
+	// We set the style for each circleMarker using our styleInfo function.
+	style: styleInfo
   }).addTo(map)
 
 });
