@@ -1,5 +1,5 @@
 // Add console.log to check to see if our code is working.
-console.log("working.. Mapping Multiple Points");
+console.log("working.. Mapping Lines");
 
 // Get data from cities.js
 let cityData = cities;
@@ -12,7 +12,7 @@ let line = [
 	[40.4502, -73.7781],
   ];
 // Create the map object with a center and zoom level.
-let map = L.map('mapid').setView([37.6213, -122.3790], 5);
+let map = L.map('map').setView([37.6213, -122.3790], 5);
 
 // Loop through the cities array and create one marker for each city.
 

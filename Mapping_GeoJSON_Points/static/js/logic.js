@@ -1,5 +1,5 @@
 // Add console.log to check to see if our code is working.
-console.log("working.. Mapping Multiple Points");
+console.log("working.. GeoJSON"); 
 
 // Get data from cities.js
 let cityData = cities;
@@ -11,15 +11,37 @@ let line = [
 	[47.4502, -122.3088],
 	[40.4502, -73.7781],
   ];
-// Create the map object with a center and zoom level.
-let map = L.map('mapid').setView([37.6213, -122.3790], 5);
+// Create the map object with center at the San Francisco airport.
+let map = L.map('map').setView([37.5, -122.5], 10);
 
+// Grabbing our GeoJSON data.
+
+// L.geoJson(sanFranAirport, {
+//     // We turn each feature into a marker on the map.
+//     pointToLayer: function(feature, latlng) {
+// 	  console.log('Feature--->', feature);
+// 	  return L.marker(latlng)
+// 	  .bindPopup("<h2>"  + feature.properties.faa +': ' + feature.properties.city + ", " + feature.properties.country + 
+// 	  "</h2> <hr> <h3>" + feature.properties.name + "</h3>" 	  );
+// 	}
+	
+// // .bindPopup("<h2>" + city.city + ", " + city.state + "</h2> <hr> <h3>Population " + city.population.toLocaleString() + "</h3>")	  
+//   }).addTo(map)
+
+// Grabbing our GeoJSON data.
+  L.geoJson(sanFranAirport, {
+	onEachFeature: function(feature, layer) {
+		console.log('Layer', layer);
+		layer.bindPopup("<h2>"  + feature.properties.faa +': ' + feature.properties.city + ", " + feature.properties.country + 
+	  "</h2> <hr> <h3>" + feature.properties.name + "</h3>" 	  );
+	}
+  }).addTo(map)
 // Loop through the cities array and create one marker for each city.
 
 // Create a polyline using the line coordinates and make the line red.
-L.polyline(line, {
-	color: "yellow"
-  }).addTo(map);
+// L.polyline(line, {
+// 	color: "yellow"
+//   }).addTo(map);
 
 cityData.forEach(function(city) {
 	console.log(city, city.location)
