@@ -1,5 +1,5 @@
 // Add console.log to check to see if our code is working.
-console.log("working.. GeoJSON EarthQ L7 step4"); 
+console.log("working.. GeoJSON EarthQ L7 step5"); 
 
 // Create the tile layer
 let streets = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -117,8 +117,33 @@ d3.json(earthql).then(function(data) {
   }).addTo(earthquakes);
 
   earthquakes.addTo(map);
- 
+ legend.onAdd = function () {
+
+    var div = L.DomUtil.create('div', 'info legend')
+	const magnitudes = [0, 1, 2, 3, 4, 5];
+	const colors = [
+	  "#98ee00",
+	  "#d4ee00",
+	  "#eecc00",
+	  "#ee9c00",
+	  "#ea822c",
+	  "#ea2c2c"
+	]
+	// Looping through our intervals to generate a label with a colored square for each interval.
+	for (var i = 0; i < magnitudes.length; i++) {
+		console.log(colors[i]);
+		div.innerHTML +=
+		"<i style='background: " + colors[i] + "'></i> " +
+		magnitudes[i] + (magnitudes[i + 1] ? "–" + magnitudes[i + 1] + "<br>" : "+");
+	}
+	return div;
+};
+
+legend.addTo(map);
 });
+
+var legend = L.control({position: 'bottomright'});
+
 
 
 // L.geoJson(sanFranAirport, {
