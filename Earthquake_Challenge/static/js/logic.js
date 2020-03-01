@@ -1,5 +1,10 @@
-// Add console.log to check to see if our code is working.
-console.log("working.. GeoJSON EarthQ L7 step4"); 
+// =========================================================================
+// Author: Juan M. Pacheco
+// Date Created: 3/1/2020
+// GeoJSON, mapbox API, earthquake.usgs.gov JSON using Map Layers
+// Add console.log to check to see if our Challenge code is working.
+//==========================================================================
+console.log("working..  Challenge"); 
 
 // Create the tile layer
 let streets = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -8,7 +13,6 @@ let streets = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{
 	id: 'mapbox/streets-v11',	
   	accessToken: API_KEY
 })
-//
 
 // We create the dark view tile layer that will be an option for our map.
 let satelliteStreets  = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -25,13 +29,16 @@ let baseMaps = {
 
 // Create the earthquake layer for our map.
 let earthquakes = new L.LayerGroup();
+let tectos = new L.LayerGroup();
+
 // We define an object that contains the overlays.
 // This overlay will be visible all the time.
 let overlays = {
+	"Tecnotic Plates": tectos,
 	Earthquakes: earthquakes
   };
 
-  // Create the map object with center, zoom level and default layer.
+// Create the map object with center, zoom level and default layer.
 let map = L.map('map', {
 	center: [39.5, -98.5],
 zoom: 3,
@@ -42,8 +49,9 @@ zoom: 3,
 // which layers are visible.
 L.control.layers(baseMaps, overlays).addTo(map);
 
-// Accessing the airport GeoJSON URL
+// Accessing the Earthquake GeoJSON URL and Tectonic Plates from GitHub JSON, to be used for Layers
 let earthql = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+let tectoql = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
 var myStyle = {
     color: "#ffffa1",
@@ -51,10 +59,9 @@ var myStyle = {
 	
 };
 // Grabbing our GeoJSON data.
-d3.json(earthql).then(function(data) {
+d3.json(earthql).then(function(data) {  
     console.log(data);
-  // Creating a GeoJSON layer with the retrieved data.
-//  L.geoJson(data, myStyle).addTo(map);
+// Creating a GeoJSON layer with the retrieved data.
 // This function returns the style data for each of the earthquakes we plot on
 // the map. We pass the magnitude of the earthquake into a function
 // to calculate the radius.
@@ -98,61 +105,51 @@ d3.json(earthql).then(function(data) {
 		return "#98ee00";
 	}
 
-  L.geoJson(data, {
-	  pointToLayer: function(feature, latlng) {
-		console.log(data);
-		return L.circleMarker(latlng);
+	L.geoJson(data, {
+		pointToLayer: function(feature, latlng) {
+			console.log(data);
+			return L.circleMarker(latlng);
+		},
 
-//		.bindPopup("<h2> Magnitude: "  + feature.properties.mag +' Location: ' + 
-//		feature.properties.place + " </h2> <hr> <h3> Time: " + feature.properties.time + "</h3>" );
-	},
+		// We set the style for each circleMarker using our styleInfo function.
+		style: styleInfo,
+		// We create a popup for each circleMarker to display the magnitude and
+		//  location of the earthquake after the marker has been created and styled.
+		onEachFeature: function(feature, layer) {
+			layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place);
+		}
+	}).addTo(earthquakes);
 
-	// We set the style for each circleMarker using our styleInfo function.
-	style: styleInfo,
-    // We create a popup for each circleMarker to display the magnitude and
-    //  location of the earthquake after the marker has been created and styled.
-    onEachFeature: function(feature, layer) {
-		layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place);
-	}
-  }).addTo(earthquakes);
+	earthquakes.addTo(map);
+	legend.onAdd = function () {
+		var div = L.DomUtil.create('div', 'info legend')
+		const magnitudes = [0, 1, 2, 3, 4, 5];
+		const colors = [
+		"#98ee00",
+		"#d4ee00",
+		"#eecc00",
+		"#ee9c00",
+		"#ea822c",
+		"#ea2c2c"
+		]
+		// Looping through our intervals to generate a label with a colored square for each interval.
+		for (var i = 0; i < magnitudes.length; i++) {
+			console.log(colors[i]);
+			div.innerHTML +=
+			"<i style='background: " + colors[i] + "'></i> " +
+			magnitudes[i] + (magnitudes[i + 1] ? "–" + magnitudes[i + 1] + "<br>" : "+");
+		}
+		return div;
+	};
 
-  earthquakes.addTo(map);
- 
+	legend.addTo(map);
 });
 
+var legend = L.control({position: 'bottomright'});
 
-// L.geoJson(sanFranAirport, {
-//     // We turn each feature into a marker on the map.
-//     pointToLayer: function(feature, latlng) {
-// 	  console.log('Feature--->', feature);
-// 	  return L.marker(latlng)
-// 	  .bindPopup("<h2>"  + feature.properties.faa +': ' + feature.properties.city + ", " + feature.properties.country + 
-// 	  "</h2> <hr> <h3>" + feature.properties.name + "</h3>" 	  );
-// 	}
-	
-// // .bindPopup("<h2>" + city.city + ", " + city.state + "</h2> <hr> <h3>Population " + city.population.toLocaleString() + "</h3>")	  
-//   }).addTo(map)
+d3.json(tectoql).then(function(data) {  
+	console.log('Tectos <hr>', data);
+	L.geoJson(data, myStyle).addTo(tectos);
+})
 
-
-// Loop through the cities array and create one marker for each city.
-
-// Create a polyline using the line coordinates and make the line red.
-// L.polyline(line, {
-// 	color: "yellow"
-//   }).addTo(map);
-
-// cityData.forEach(function(city) {
-// 	console.log(city, city.location)
-// 	L.circleMarker(city.location, {
-// 		radius: (city.population-200000)/100000
-// 	})
-// .bindPopup("<h2>" + city.city + ", " + city.state + "</h2> <hr> <h3>Population " + city.population.toLocaleString() + "</h3>")
-//   .addTo(map);
-// });
-
-//  Add a marker to the map for Los Angeles, California.
-// L.circle([34.0522, -118.2437], {
-// 	radius: 100,
-// 	color: 'black',
-// 	fillColor: '#ffffa1'
-//  }).addTo(map);
+tectos.addTo(Map);
